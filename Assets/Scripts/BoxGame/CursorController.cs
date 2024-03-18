@@ -80,7 +80,7 @@ public class CursorController : MonoBehaviour
                     udpHost.SendMsg("left");
                 }
 
-
+                udpHost.SendMsg("sleep");
             }
              ExampleEvents.current.MKeyHit();
         }
