@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Fusion;
 
-public class HitBoxSpawner : MonoBehaviour
+public class HitBoxSpawner : NetworkBehaviour
 {
-    public GameObject hitbox;
-    private GameObject currentHitbox;
+    public NetworkObject hitbox;
+    private NetworkObject currentHitbox;
     public Transform gameView;
 
     public float heightOffset = 1;
@@ -41,7 +42,14 @@ public class HitBoxSpawner : MonoBehaviour
         float shortestScale = transform.localScale.y - sizeOffset;
         float tallestScale = transform.localScale.y + sizeOffset;
 
-        currentHitbox = Instantiate(hitbox, new Vector3(Random.Range(leftmostPoint, rightmostPoint), Random.Range(lowestPoint, highestPoint), transform.position.z), transform.rotation);
+        Debug.Log("Spawning " + hitbox);
+        if (Runner != null)
+        {
+            currentHitbox = Runner.Spawn(hitbox);
+        }
+      
+        //Runner.Spawn(player, Vector3.zero, Quaternion.identity, Runner.LocalPlayer, onBeforeSpawned: null);
+        //currentHitbox = Instantiate(hitbox, new Vector3(Random.Range(leftmostPoint, rightmostPoint), Random.Range(lowestPoint, highestPoint), transform.position.z), transform.rotation);
         currentHitbox.transform.localScale = new Vector3(Random.Range(narrowestScale, widestScale), Random.Range(shortestScale, tallestScale), transform.localScale.z/20);
         currentHitbox.transform.parent = gameView;
 

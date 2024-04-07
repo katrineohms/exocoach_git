@@ -46,7 +46,6 @@ public class TimerScript : MonoBehaviour
             //Resetting
             scoreManager.resetScore();
             hitBoxSpawner.SetActive(false);
-            cursor.SetActive(false);
             Destroy(GameObject.FindGameObjectWithTag("HitBox"));
         }
             

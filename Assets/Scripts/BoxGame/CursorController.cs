@@ -2,14 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Udp;
+using Fusion;
 
-public class CursorController : MonoBehaviour
+public class CursorController : NetworkBehaviour
 {
-    public UdpHost udpHost;
-    public Transform cursor;
+    public GameObject udpHostObject;
+    private UdpHost udpHost;
+
     private float wrist_angle;
     private float elbow_angle;
     public GameObject hitbox;
+    public GameObject cursor;
 
     [Header("Debug settings")]
     public float x_speed = -40f;
@@ -23,13 +26,17 @@ public class CursorController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Debug.Log("Cursor Controller active");
+        udpHostObject = GameObject.FindGameObjectWithTag("UdpHost");
+        udpHost = udpHostObject.GetComponent<UdpHost>();
 
+        cursor = GameObject.FindGameObjectWithTag("Cursor");
         //ExampleEvents.current.onMKeyHit += OnMKeyhit;
         UdpHost.OnReceiveMsg += OnMotorValue;
 
         if (arrowkeyDebug == true)
         {
-            cursor.position = new Vector3(0, 0, z_position);
+            cursor.transform.position = new Vector3(0, 0, z_position);
         }
     }
 
@@ -37,6 +44,7 @@ public class CursorController : MonoBehaviour
     void Update()
     {
         hitbox = GameObject.FindGameObjectWithTag("HitBox");
+        cursor = GameObject.FindGameObjectWithTag("Cursor");
 
         if (arrowkeyDebug == true)
         {
@@ -45,7 +53,7 @@ public class CursorController : MonoBehaviour
 
         else
         {
-            cursor.position = new Vector3(x_offset + wrist_angle / x_speed, y_offset + elbow_angle / y_speed, z_position);
+            cursor.transform.position = new Vector3(x_offset + wrist_angle / x_speed, y_offset + elbow_angle / y_speed, z_position);
         }
 
 
@@ -54,7 +62,7 @@ public class CursorController : MonoBehaviour
         {
             if (hitbox != null && cursor != null)
             {
-                Vector3 difference = cursor.position - hitbox.transform.position;
+                Vector3 difference = cursor.transform.position - hitbox.transform.position;
                 Debug.Log("Difference in position: " + difference);
                 if (difference.y <= -0.4)
                 {
@@ -92,7 +100,7 @@ public class CursorController : MonoBehaviour
         float moveVertical = Input.GetAxis("Vertical");
 
         // Adjust cursor position based on arrow key inputs
-        cursor.position += new Vector3(moveHorizontal, moveVertical, 0) * Time.deltaTime * 5f;
+        cursor.transform.position += new Vector3(moveHorizontal, moveVertical, 0) * Time.deltaTime * 5f;
     }
 
 
