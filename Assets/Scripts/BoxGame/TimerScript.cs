@@ -20,6 +20,9 @@ public class TimerScript : MonoBehaviour
     public GameObject cursor;
     public GameObject hitBoxSpawner;
 
+    [Header("Statistics")]
+    public TimesPlayed timesPlayed;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -37,20 +40,10 @@ public class TimerScript : MonoBehaviour
 
         else
         {
-            Debug.Log("Time's up!");
-            endScreen.SetActive(true);
-            TimerObject.SetActive(false);
-            int finalScore = scoreManager.finalScore();
-            finalScoreText.text = "You scored:  " + finalScore.ToString();
-
-            //Resetting
-            scoreManager.resetScore();
-            hitBoxSpawner.SetActive(false);
-            cursor.SetActive(false);
-            Destroy(GameObject.FindGameObjectWithTag("HitBox"));
+            onTimerEnd();
         }
-            
-        
+
+
     }
     void UpdateTimerText()
     {
@@ -62,5 +55,23 @@ public class TimerScript : MonoBehaviour
     public void ResetTimer()
     {
         timer = totalTime;
+    }
+
+    public void onTimerEnd()
+    {
+        Debug.Log("Time's up!");
+        endScreen.SetActive(true);
+        TimerObject.SetActive(false);
+        int finalScore = scoreManager.finalScore();
+        finalScoreText.text = "You scored:  " + finalScore.ToString();
+
+        //Resetting
+        scoreManager.resetScore();
+        hitBoxSpawner.SetActive(false);
+        cursor.SetActive(false);
+        Destroy(GameObject.FindGameObjectWithTag("HitBox"));
+
+        timesPlayed.IncrementCount(finalScore);
+
     }
 }

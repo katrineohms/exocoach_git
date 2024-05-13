@@ -12,7 +12,7 @@ public class Controller : MonoBehaviour
     void Start()
     {
         Receive.current.onMKeyHit += OnMKeyhit;
-        UdpHost.OnReceiveMsg += OnMotorValue;
+        udpHost.OnReceiveMsg += OnMotorValue;
     }
 
     //Output to exoskeleton

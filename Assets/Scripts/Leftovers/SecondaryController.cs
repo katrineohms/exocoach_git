@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using Udp;
 
-public class CursorController : MonoBehaviour
+public class SecondaryController : MonoBehaviour
 {
-    public UdpHost udpHost;
+    public UdpHost MainUdpHost;
+    public UdpHost SecondaryUdpHost;
     public Transform cursor;
     private float wrist_angle;
     private float elbow_angle;
@@ -23,55 +24,26 @@ public class CursorController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
         //ExampleEvents.current.onMKeyHit += OnMKeyhit;
-        udpHost.OnReceiveMsg += OnMotorValue;
-
-        if (arrowkeyDebug == true)
-        {
-            cursor.position = new Vector3(0, 0, z_position);
-        }
+        MainUdpHost.OnReceiveMsg += OnMotorValue;
     }
 
     // Update is called once per frame
     void Update()
     {
-        hitbox = GameObject.FindGameObjectWithTag("HitBox");
-
-        if (arrowkeyDebug == true)
-        {
-            MoveCursorWithArrowKeys();
-        }
-
-        else
-        {
-            cursor.position = new Vector3(x_offset + wrist_angle / x_speed, y_offset + elbow_angle / y_speed, z_position);
-        }
-
-
-        // Checking when the key "m" is pressed
         if (Input.GetKeyDown("m"))
         {
             Debug.Log("3");
-            udpHost.SendMsg("3");
+            SecondaryUdpHost.SendMsg("3");
             ExampleEvents.current.MKeyHit();
         }
-    }
-
-    private void MoveCursorWithArrowKeys()
-    {
-        float moveHorizontal = Input.GetAxis("Horizontal");
-        float moveVertical = Input.GetAxis("Vertical");
-
-        // Adjust cursor position based on arrow key inputs
-        cursor.position += new Vector3(moveHorizontal, moveVertical, 0) * Time.deltaTime * 5f;
     }
 
 
     private void OnMKeyhit()
     {
         Debug.Log("pressed");
-        udpHost.SendMsg("move");
+        SecondaryUdpHost.SendMsg("move");
     }
 
     private void OnMotorValue(string value)

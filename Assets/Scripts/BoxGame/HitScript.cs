@@ -9,10 +9,12 @@ public class HitScript : MonoBehaviour
     public bool cursorInside = false;
     public int countDownTime = 3;
     public int cursorTime = 3;
+    public SoundEffect SoundEffect;
 
     // Start is called before the first frame update
     void Start()
     {
+        SoundEffect = GameObject.FindGameObjectWithTag("EventSystem").GetComponent<SoundEffect>(); 
         score = GameObject.FindGameObjectWithTag("ScoreManager").GetComponent<ScoreScript>();
         countDown = GameObject.FindGameObjectWithTag("CountDownManager").GetComponent<CountDownScript>();
     }
@@ -27,7 +29,6 @@ public class HitScript : MonoBehaviour
     {
         if (other.CompareTag("Cursor"))
         {
-            Debug.Log("Cursor entered collider");
             cursorInside = true;
             StartCoroutine(CheckCursorStay());
             countDown.displayCountDown(cursorTime);
@@ -38,8 +39,7 @@ public class HitScript : MonoBehaviour
     {
         if (other.CompareTag("Cursor"))
         {
-            Debug.Log("Cursor exited collider");
-            cursorInside = false;
+             cursorInside = false;
             StopAllCoroutines();
 
             countDown.resetCountdown();
@@ -54,18 +54,17 @@ public class HitScript : MonoBehaviour
             yield return new WaitForSeconds(1); // Wait for 1 second
             cursorTime = cursorTime - 1;
             countDown.displayCountDown(cursorTime);
-            Debug.Log("Time remaining: " + cursorTime);
         }
 
         if (cursorInside)
         {
             // The cursor has stayed inside the hitbox for 3 seconds
-            Debug.Log("Cursor stayed inside hitbox for 3 seconds.");
             score.addScore();
             Destroy(gameObject);
 
             countDown.resetCountdown();
             cursorTime = countDownTime;
+            SoundEffect.playSound();
         }
     }
 

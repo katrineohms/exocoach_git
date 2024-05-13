@@ -11,8 +11,8 @@ namespace Udp
 {
     public class UdpHost : MonoBehaviour
     {
-        public static event Action<string> OnReceiveMsg;
-        public static event Action<string> OnClientError;
+        public event Action<string> OnReceiveMsg;
+        public event Action<string> OnClientError;
 
         [SerializeField, Tooltip("Set to true if you want the debug logs to show in the console")]
         protected bool _consoleLogsEnabled = false;

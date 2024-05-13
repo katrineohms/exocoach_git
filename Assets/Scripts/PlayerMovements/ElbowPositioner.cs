@@ -6,6 +6,7 @@ using Udp;
 
 public class ElbowPositioner : MonoBehaviour
 {
+    public UdpHostMulti udpHost;
     public float valueElbow { get; set; }
     public float valueWrist { get; set; }
 
@@ -25,7 +26,7 @@ public class ElbowPositioner : MonoBehaviour
         valueElbow = 0;
         valueWrist = 0;
         // Subscribe to the OnReceiveMsg event
-        UdpHost.OnReceiveMsg += UpdateAngles;
+        UdpHostMulti.OnReceiveMsg += UpdateAngles;
     }
 
     // Update is called once per frame
@@ -57,21 +58,24 @@ public class ElbowPositioner : MonoBehaviour
     }
 
 
-    private void UpdateAngles(string message)
+    private void UpdateAngles(int clientId, string message)
     {
-        string[] values = message.Split(':');
-        if (values.Length == 2)
+        if (clientId == 1) // Master client
         {
-            // Parse and assign the wrist and elbow angles
-            valueElbow = float.Parse(values[0]);
-            valueWrist = float.Parse(values[1]);
-        }
+            string[] values = message.Split(':');
+            if (values.Length == 2)
+            {
+                // Parse and assign the wrist and elbow angles
+                valueElbow = float.Parse(values[0]);
+                valueWrist = float.Parse(values[1]);
+            }
 
-        // Parse the received message and update the wrist and elbow angles
-        string[] angles = message.Split(':');
-        if (angles.Length == 2 && float.TryParse(angles[0], out float wristAngle) && float.TryParse(angles[1], out float elbowAngle))
-        {
-            SetElbow(elbowAngle, wristAngle);
+            // Parse the received message and update the wrist and elbow angles
+            string[] angles = message.Split(':');
+            if (angles.Length == 2 && float.TryParse(angles[0], out float wristAngle) && float.TryParse(angles[1], out float elbowAngle))
+            {
+                SetElbow(elbowAngle, wristAngle);
+            }
         }
     }
 
