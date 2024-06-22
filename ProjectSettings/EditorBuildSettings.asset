@@ -9,12 +9,15 @@ EditorBuildSettings:
     path: Assets/Scenes/MainMenu.unity
     guid: b5e1f338d8d251449ab0ed0f90233d11
   - enabled: 0
-    path: Assets/Scenes/Settings.unity
-    guid: 0e347d8f91b73d64a9e6af6b35afb924
-  - enabled: 1
-    path: Assets/Scenes/Puzzle.unity
+    path: 
+    guid: 00000000000000000000000000000000
+  - enabled: 0
+    path: Assets/Scenes/LeftOvers/Puzzle.unity
     guid: b860cf986203be746ab88f1899a4c345
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/BoxGame.unity
     guid: aea6dd6da13713244bf199d775628435
+  - enabled: 1
+    path: Assets/Scenes/BalloonGame.unity
+    guid: 0dfdc2147843d9342b012248401eef80
   m_configObjects: {}

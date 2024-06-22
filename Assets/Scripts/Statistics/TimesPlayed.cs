@@ -6,24 +6,29 @@ using UnityEngine.UI;
 public class TimesPlayed : MonoBehaviour
 {
     public PlayData playData = new PlayData();
-    private string filePath;
+    public ArmDataObj armDataObj = new ArmDataObj();
+    private string filePath0;
+    private string filePath1;
+    private string filePath2;
     public RightLeftHand rightleftData;
 
     void Start()
     {
-        filePath = Path.Combine(Application.persistentDataPath, "playData.json");
+        filePath0 = Path.Combine(Application.persistentDataPath, "playData.json");
+        string timedate = DateTime.Now.ToString("yyyy-MM-dd");
+        string fileName = "Armdata" + timedate + ".json";
+        filePath1 = Path.Combine(Application.persistentDataPath, fileName);
         LoadData();
     }
 
     public void LoadData()
     {
-        if (File.Exists(filePath))
+        if (File.Exists(filePath0))
         {
             Debug.Log("Loading data");
-            string json = File.ReadAllText(filePath);
+            string json = File.ReadAllText(filePath0);
             playData = JsonUtility.FromJson<PlayData>(json);
         }
-
         else
         {
             Debug.Log("No play data, creating new data");
@@ -36,14 +41,25 @@ public class TimesPlayed : MonoBehaviour
 
             // Save the new data
             SaveData();
-
         }
     }
 
     public void SaveData()
     {
         string json = JsonUtility.ToJson(playData, true);
-        File.WriteAllText(filePath, json);
+        File.WriteAllText(filePath0, json);
+
+
+
+        armDataObj.master = rightleftData.armDataMasterList;
+        armDataObj.secondary = rightleftData.armDataSecondaryList;
+        Debug.Log("sec len : " + armDataObj.secondary.Count);
+        string jsonArmData = JsonUtility.ToJson(armDataObj, true);
+        Debug.Log("json : " + jsonArmData);
+
+        File.WriteAllText(filePath1, jsonArmData);
+
+
     }
 
     public void DisplayCount(Text countText)
@@ -80,7 +96,7 @@ public class TimesPlayed : MonoBehaviour
             float elbowControl = todayData.TodayAverageElbowPercent;
 
             // Set text to display count, high score, and average score for today
-            percentageText.text = $"Wrist control: {wristControl}% \n \n \n \n \n Elbow control: {wristControl}%";
+            percentageText.text = $"Wrist control: {wristControl}% \n \n \n \n \n Elbow control: {elbowControl}%";
         }
         else
         {
@@ -94,7 +110,6 @@ public class TimesPlayed : MonoBehaviour
         string today = DateTime.Now.ToString("yyyy-MM-dd");
         DailyPlayData todayData = playData.DailyCounts.Find(x => x.Date == today);
         (float wristPercent, float elbowPercent) = rightleftData.GetDifference();
-
 
         if (todayData != null)
         {
@@ -134,21 +149,17 @@ public class TimesPlayed : MonoBehaviour
             playData.DailyCounts.Add(todayData); // Add the new entry to the list
         }
 
-
-
         todayData.TodayAverageScore = (float)todayData.TodayTotalScore / todayData.TodayPlays;
         SaveData();
         Debug.Log($"Action performed. Current plays for today ({today}): {todayData.TodayPlays}. High Score for today: {todayData.TodayHighScore}. Average Score for today: {todayData.TodayAverageScore}");
-
     }
-
 
     public void ResetData()
     {
-        filePath = Path.Combine(Application.persistentDataPath, "playData.json");
-        if (File.Exists(filePath))
+        filePath0 = Path.Combine(Application.persistentDataPath, "playData.json");
+        if (File.Exists(filePath0))
         {
-            File.Delete(filePath);
+            File.Delete(filePath0);
             Debug.Log("Play data file deleted.");
         }
         else
@@ -156,7 +167,6 @@ public class TimesPlayed : MonoBehaviour
             Debug.Log("Play data file not found.");
         }
     }
-
 
     public void PrintPercentage(Text countText)
     {
@@ -182,48 +192,8 @@ public class TimesPlayed : MonoBehaviour
                 wristText = "Wrist: No data";
             }
             dataText += elbowText + "      " + wristText + "\n";
-
         }
 
         countText.text = dataText;
     }
-
-    /*public void SimulatePlayData()
-    {
-        Debug.Log("generating data");
-        for (int i = 0; i < 7; i++)
-        {
-            // Get the date for the current day in the iteration
-            string dateToCheck = DateTime.Now.AddDays(-i).ToString("yyyy-MM-dd");
-
-            // Find data for the current day or create a new entry if none exists
-            DailyPlayData dailyData = playData.DailyCounts.Find(x => x.Date == dateToCheck);
-            if (dailyData == null)
-            {
-                Debug.Log("No data for day " + i + ". Generating data.");
-                // Simulating some random plays, scores, and calculating an average
-                int plays = UnityEngine.Random.Range(5, 15); // Random number of plays between 5 and 15
-                int totalScore = 0;
-                for (int j = 0; j < plays; j++)
-                {
-                    totalScore += UnityEngine.Random.Range(1, 20); // Random score between 0 and 100
-                }
-                float averageScore = (float)totalScore / plays;
-                int highScore = UnityEngine.Random.Range(10, 20); // Random high score between 10 and 100
-
-                // Create a new entry for this date
-                playData.DailyCounts.Add(new DailyPlayData
-                {
-                    Date = dateToCheck,
-                    TodayPlays = plays,
-                    TodayHighScore = highScore,
-                    TodayAverageScore = averageScore
-                });
-                Debug.Log(dateToCheck + "," + plays + "," + highScore + "," + averageScore);
-            }
-        }
-        SaveData();
-    }
-    */
-
 }

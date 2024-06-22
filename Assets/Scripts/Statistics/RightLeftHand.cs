@@ -4,6 +4,7 @@ using UnityEngine;
 using Udp;
 using System;
 
+
 public class RightLeftHand : MonoBehaviour
 {
     public UdpHostMulti udpHost;
@@ -18,7 +19,10 @@ public class RightLeftHand : MonoBehaviour
     private bool secondaryMessageReceived = false;
     public float total_wristAngleDifference;
     public float total_elbowAngleDifference;
-
+    [SerializeField]
+    public List<ArmData> armDataMasterList = new List<ArmData>();
+    [SerializeField]
+    public List<ArmData> armDataSecondaryList = new List<ArmData>();
     // Start is called before the first frame update
     void Start()
     {
@@ -29,7 +33,7 @@ public class RightLeftHand : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-      
+
     }
 
     private void OnMotorValue(int clientId, string value)
@@ -45,6 +49,9 @@ public class RightLeftHand : MonoBehaviour
 
                 // Set master message received flag
                 masterMessageReceived = true;
+
+                DateTime currentTime = DateTime.Now;
+                armDataMasterList.Add(new ArmData { angle = Master_elbow_angle, dateTime = currentTime.ToString() });
             }
         }
 
@@ -59,6 +66,10 @@ public class RightLeftHand : MonoBehaviour
 
                 // Set secondary message received flag
                 secondaryMessageReceived = true;
+
+                DateTime currentTime = DateTime.Now;
+                armDataSecondaryList.Add(new ArmData { angle = Secondary_elbow_angle, dateTime = currentTime.ToString() });
+
             }
         }
 
@@ -88,8 +99,8 @@ public class RightLeftHand : MonoBehaviour
     public (float, float) GetDifference()
     {
         Debug.Log("Wrist difference:" + total_wristAngleDifference + ". Elbow difference:" + total_elbowAngleDifference + " Master wrist: " + Total_Master_wrist_angle + " Master elbow: " + Total_Master_elbow_angle);
-        float WristPercentage = (1-(total_wristAngleDifference / Total_Master_wrist_angle)) * 100f;
-        float ElbowPercentage = (1-(total_elbowAngleDifference / Total_Master_elbow_angle)) * 100f;
+        float WristPercentage = (1 - (total_wristAngleDifference / Total_Master_wrist_angle)) * 100f;
+        float ElbowPercentage = (1 - (total_elbowAngleDifference / Total_Master_elbow_angle)) * 100f;
 
         Debug.Log("Wrist Angle Percentage: " + WristPercentage + "%");
         Debug.Log("Elbow Angle Percentage: " + ElbowPercentage + "%");
@@ -107,7 +118,7 @@ public class RightLeftHand : MonoBehaviour
             ElbowPercentage = 75;
         }
 
-          
+
         return (WristPercentage, ElbowPercentage);
     }
 
